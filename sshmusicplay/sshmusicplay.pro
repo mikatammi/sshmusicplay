@@ -14,6 +14,24 @@ SOURCES += main.cpp mainwindow.cpp
 HEADERS += mainwindow.h
 FORMS += mainwindow.ui
 
+# libssl android
+#android {
+LIBS += ../android-libs/openssl/lib/libssl.so ../android-libs/openssl/lib/libcrypto.so
+INCLUDEPATH += ../android-libs/openssl/include
+QMAKE_POST_LINK += \
+    $${QMAKE_COPY} ../android-libs/openssl/lib/libssl.so $$PWD/android/libs/armeabi-v7a;
+QMAKE_POST_LINK += \
+    $${QMAKE_COPY} ../android-libs/openssl/lib/libcrypto.so $$PWD/android/libs/armeabi-v7a;
+#}
+
+# libssh android
+#android {
+LIBS += ../android-libs/libssh/lib/libssh.so
+INCLUDEPATH += ../android-libs/libssh/include
+QMAKE_POST_LINK += \
+    $${QMAKE_COPY} ../android-libs/libssh/lib/libssh.so $$PWD/android/libs/armeabi-v7a;
+#}
+
 # Please do not modify the following two lines. Required for deployment.
 include(deployment.pri)
 qtcAddDeployment()
@@ -51,4 +69,7 @@ OTHER_FILES += \
     android/src/org/kde/necessitas/ministro/IMinistroCallback.aidl \
     android/src/org/kde/necessitas/origo/QtActivity.java \
     android/src/org/kde/necessitas/origo/QtApplication.java \
-    android/version.xml
+    android/version.xml \
+    ../android-libs/openssl/lib/libssl.so \
+    ../android-libs/openssl/lib/libcrypto.so \
+    ../android-libs/libssh/lib/libssh.so
