@@ -52,9 +52,19 @@
     <item>
      <widget class="QLineEdit" name="txtPassword">
       <property name="echoMode">
-       <enum>QLineEdit::PasswordEchoOnEdit</enum>
+       <enum>QLineEdit::Password</enum>
       </property>
      </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lblDir">
+      <property name="text">
+       <string>Directory:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtDirectory"/>
     </item>
     <item>
      <widget class="QLabel" name="lblStatus">
