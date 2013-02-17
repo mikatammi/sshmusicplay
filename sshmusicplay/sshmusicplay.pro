@@ -10,9 +10,9 @@ DEPLOYMENTFOLDERS = # file1 dir1
 # CONFIG += mobility
 # MOBILITY +=
 
-SOURCES += main.cpp connectwindow.cpp
-HEADERS += connectwindow.hpp
-FORMS += connectwindow.ui
+SOURCES += main.cpp mainwindow.cpp
+HEADERS += mainwindow.hpp
+FORMS += mainwindow.ui
 
 # libssl android
 android {

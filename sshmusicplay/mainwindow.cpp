@@ -1,5 +1,5 @@
-#include "connectwindow.hpp"
-#include "ui_connectwindow.h"
+#include "mainwindow.hpp"
+#include "ui_mainwindow.h"
 
 #include <QCoreApplication>
 #include <QMessageBox>
@@ -13,20 +13,20 @@ extern "C"
 
 #include <cstdlib>
 
-ConnectWindow::ConnectWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::ConnectWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     connect(ui->btnConnect, SIGNAL(clicked()), SLOT(doConnect()));
 }
 
-ConnectWindow::~ConnectWindow()
+MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-void ConnectWindow::setOrientation(ScreenOrientation orientation)
+void MainWindow::setOrientation(ScreenOrientation orientation)
 {
     Qt::WidgetAttribute attribute;
     switch (orientation) {
@@ -58,7 +58,7 @@ void ConnectWindow::setOrientation(ScreenOrientation orientation)
     setAttribute(attribute, true);
 }
 
-void ConnectWindow::showExpanded()
+void MainWindow::showExpanded()
 {
 #if defined(Q_WS_SIMULATOR)
     showFullScreen();
@@ -69,8 +69,10 @@ void ConnectWindow::showExpanded()
 #endif
 }
 
-void ConnectWindow::doConnect()
+void MainWindow::doConnect()
 {
+    ui->stackedWidget->setCurrentWidget(ui->pageDirectory);
+    return;
     // TODO: After testing, move this stuff to ssh session class
 
     ui->lblStatus->setText("Connecting...");
