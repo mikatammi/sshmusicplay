@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "connectwindow.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -17,14 +17,16 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    MainWindow mainWindow;
-    mainWindow.setOrientation(MainWindow::ScreenOrientationAuto);
-    mainWindow.showExpanded();
+    ConnectWindow connectWindow;
+    connectWindow.setOrientation(ConnectWindow::ScreenOrientationAuto);
+    connectWindow.showExpanded();
 
     qDebug() << "Initializing libavcodec/libavformat";
 
     // Register all formats and codecs for libavcodec/libavformat
     av_register_all();
 
-    return app.exec();
+    int retval = app.exec();
+
+    return retval;
 }

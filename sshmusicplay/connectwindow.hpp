@@ -4,10 +4,10 @@
 #include <QMainWindow>
 
 namespace Ui {
-    class MainWindow;
+    class ConnectWindow;
 }
 
-class MainWindow : public QMainWindow
+class ConnectWindow : public QMainWindow
 {
     Q_OBJECT
 public:
@@ -17,8 +17,8 @@ public:
         ScreenOrientationAuto
     };
 
-    explicit MainWindow(QWidget *parent = 0);
-    virtual ~MainWindow();
+    explicit ConnectWindow(QWidget *parent = 0);
+    virtual ~ConnectWindow();
 
     // Note that this will only have an effect on Fremantle.
     void setOrientation(ScreenOrientation orientation);
@@ -29,7 +29,7 @@ private slots:
     void doConnect();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::ConnectWindow *ui;
 };
 
 #endif // MAINWINDOW_H
