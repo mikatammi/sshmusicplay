@@ -34,10 +34,10 @@ QMAKE_POST_LINK += \
 
 # libav android
 android {
-LIBS += ../android-libs/libav/lib/libavutil.a
 LIBS += ../android-libs/libav/lib/libavformat.a
 LIBS += ../android-libs/libav/lib/libavcodec.a
 LIBS += ../android-libs/libav/lib/libavdevice.a
+LIBS += ../android-libs/libav/lib/libavutil.a
 INCLUDEPATH += ../android-libs/libav/include
 }
 
