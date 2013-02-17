@@ -20,5 +20,8 @@
     --target-os=linux \
     --arch=armv7-a \
     --cc=$ANDROID_STANDALONE_TOOLCHAIN/bin/arm-linux-androideabi-gcc \
+    --cross-prefix=$ANDROID_STANDALONE_TOOLCHAIN/bin/arm-linux-androideabi- \
     --nm=$ANDROID_STANDALONE_TOOLCHAIN/bin/arm-linux-androideabi-nm \
-    --ar=$ANDROID_STANDALONE_TOOLCHAIN/bin/arm-linux-androideabi-ar
+    --extra-cflags=" -fPIC -DANDROID " \
+    --enable-neon \
+    --enable-armv5te
