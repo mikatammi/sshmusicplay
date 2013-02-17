@@ -32,6 +32,15 @@ QMAKE_POST_LINK += \
     $${QMAKE_COPY} ../android-libs/libssh/lib/libssh.so $$PWD/android/libs/armeabi-v7a;
 }
 
+# libav android
+android {
+LIBS += ../android-libs/libav/lib/libavutil.a
+LIBS += ../android-libs/libav/lib/libavformat.a
+LIBS += ../android-libs/libav/lib/libavcodec.a
+LIBS += ../android-libs/libav/lib/libavdevice.a
+INCLUDEPATH += ../android-libs/libav/include
+}
+
 # Please do not modify the following two lines. Required for deployment.
 include(deployment.pri)
 qtcAddDeployment()
