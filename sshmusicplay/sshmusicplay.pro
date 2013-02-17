@@ -10,8 +10,16 @@ DEPLOYMENTFOLDERS = # file1 dir1
 # CONFIG += mobility
 # MOBILITY +=
 
-SOURCES += main.cpp mainwindow.cpp
-HEADERS += mainwindow.hpp
+SOURCES += main.cpp mainwindow.cpp \
+    sshsession.cpp \
+    sshfile.cpp \
+    audiofile.cpp \
+    audiooutput.cpp
+HEADERS += mainwindow.hpp \
+    sshsession.hpp \
+    sshfile.hpp \
+    audiofile.hpp \
+    audiooutput.hpp
 FORMS += mainwindow.ui
 
 # libssl android
