@@ -2,11 +2,17 @@
 #include "ui_mainwindow.h"
 
 #include <QCoreApplication>
+#include <QMessageBox>
+
+#include <libssh/libssh.h>
+#include <cstdlib>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    connect(ui->btnConnect, SIGNAL(clicked()), SLOT(doConnect()));
 }
 
 MainWindow::~MainWindow()
@@ -55,4 +61,46 @@ void MainWindow::showExpanded()
 #else
     show();
 #endif
+}
+
+void MainWindow::doConnect()
+{
+    ui->lblStatus->setText("Connecting...");
+
+    ssh_session my_ssh_session = ssh_new();
+
+    if(my_ssh_session == NULL)
+    {
+        ui->lblStatus->setText("Failed to create session");
+        return;
+    }
+
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_HOST,
+                    ui->txtHostname->text().toStdString().c_str());
+
+    int verbosity = SSH_LOG_PROTOCOL;
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
+
+    int port = 22;
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_PORT, &port);
+
+    int rc = ssh_connect(my_ssh_session);
+    if (rc != SSH_OK)
+    {
+        ui->lblStatus->setText(
+                    QString("Failed to connect:")
+                    + ssh_get_error(my_ssh_session));
+
+        ssh_free(my_ssh_session);
+        return;
+    }
+
+    ui->lblStatus->setText("Success! Disconnecting.");
+
+    // TODO: Show question regarding correct host key
+    //QMessageBox::question(this, "HahaaTitle", "HahaaTeksti",
+    //    QMessageBox::Yes || QMessageBox::No || QMessageBox::Cancel);
+
+    ssh_disconnect(my_ssh_session);
+    ssh_free(my_ssh_session);
 }

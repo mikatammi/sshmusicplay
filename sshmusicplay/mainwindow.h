@@ -25,6 +25,9 @@ public:
 
     void showExpanded();
 
+private slots:
+    void doConnect();
+
 private:
     Ui::MainWindow *ui;
 };
