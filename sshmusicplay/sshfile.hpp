@@ -3,7 +3,6 @@
 
 #include <QObject>
 
-// Include libssh SFTP header
 extern "C"
 {
 #include <libssh/sftp.h>
