@@ -6,7 +6,7 @@
 # a patch for necessitas qt-creator to include my custom shared libraries
 # in libs.xml bundledlibraries .
 
-SOURCE="sshmusicplay/android/res/values/libs.xml.base"
+SOURCE="libs.xml.base"
 TARGET="sshmusicplay/android/res/values/libs.xml"
 
 echo "Watcing for changes in $TARGET"
