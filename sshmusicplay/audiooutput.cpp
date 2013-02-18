@@ -38,6 +38,8 @@ AudioOutput::AudioOutput(QObject *parent) :
 
 AudioOutput::~AudioOutput()
 {
+    // TODO: Figure out if java audiotrackoutputobject needs to be
+    //       released
 }
 
 void AudioOutput::play()
@@ -108,6 +110,8 @@ void AudioOutput::write(qint16* data, size_t offset, size_t count)
     // Call Java AudioTrackOutput write function
     env->CallVoidMethod(audiotrackoutputobject_, audiotrackoutput_write__,
                         data_array, 0, count);
+
+    // TODO: Figure out if jshortArray needs to be released?
 
     // Detach Java VM from current thread after use
     javavm__->DetachCurrentThread();
