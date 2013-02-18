@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QDebug>
+#include <qmath.h>
 
 extern "C"
 {
@@ -17,12 +18,24 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui_(new Ui::MainWindow),
       sshsession_(),
-      filelist_model_(this)
+      filelist_model_(this),
+      audiooutput_()
 {
     ui_->setupUi(this);
     ui_->treeView->setModel(&filelist_model_);
 
     connect(ui_->btnConnect, SIGNAL(clicked()), SLOT(doConnect()));
+
+    // Generate sin signal a
+    qint16 a[44100];
+    for (size_t i = 0; i < 44100; ++i)
+    {
+        a[i] = qSin(float(i) / 19.9f) * 30000.0f;
+    }
+
+    audiooutput_.write(a, 0, 44100);
+    audiooutput_.play();
+    audiooutput_.stop();
 }
 
 MainWindow::~MainWindow()

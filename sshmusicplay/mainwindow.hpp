@@ -5,6 +5,7 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include "sshsession.hpp"
+#include "audiooutput.hpp"
 
 namespace Ui {
     class MainWindow;
@@ -36,6 +37,8 @@ private:
 
     SSHSession sshsession_;
     QStandardItemModel filelist_model_;
+
+    AudioOutput audiooutput_;
 };
 
 #endif // MAINWINDOW_H
