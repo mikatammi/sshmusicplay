@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QStandardItem>
+#include <QStandardItemModel>
+#include "sshsession.hpp"
 
 namespace Ui {
     class MainWindow;
@@ -29,7 +32,10 @@ private slots:
     void doConnect();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow *ui_;
+
+    SSHSession sshsession_;
+    QStandardItemModel filelist_model_;
 };
 
 #endif // MAINWINDOW_H
