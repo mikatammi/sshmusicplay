@@ -32,25 +32,20 @@ public:
 
     /// Try both password authentication methods,
     /// depending on which methods host supports.
-    /// @param username Username
     /// @param password Plaintext password
     /// @return True if success, false if fails
     bool authenticate_try_password_methods(
-            const QString& username, const QString& password);
+            const QString& password);
 
     /// Password -authentication method
-    /// @param username Username
     /// @param password Plaintext password
     /// @return True if success, false if fails
-    bool authenticate_password(const QString& username,
-                               const QString& password);
+    bool authenticate_password(const QString& password);
 
     /// Keyboard-interactive method, tries to answer to password field
-    /// @param username Username
     /// @param password Plaintext password
     /// @return True if success, false if fails
-    bool authenticate_keyboard_interactive_password(
-            const QString& username, const QString& password);
+    bool authenticate_keyboard_interactive_password(const QString& password);
 
     /// Initialize sftp subsystem
     /// @return True if success, false if fails

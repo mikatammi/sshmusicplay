@@ -74,8 +74,7 @@ bool SSHSession::connect(const QString& hostname,
     return true;
 }
 
-bool SSHSession::authenticate_try_password_methods(
-        const QString &username, const QString &password)
+bool SSHSession::authenticate_try_password_methods(const QString &password)
 {
     qDebug() << "Authenticating...";
 
@@ -88,7 +87,7 @@ bool SSHSession::authenticate_try_password_methods(
         qDebug() << "Trying password method...";
 
         // Try Password Authentication Method
-        if (authenticate_password(username, password))
+        if (authenticate_password(password))
         {
             // Success
             return true;
@@ -102,8 +101,7 @@ bool SSHSession::authenticate_try_password_methods(
 
         // Try Keyboard-Interactive Method,
         // this tries to answer password field.
-        if (authenticate_keyboard_interactive_password(
-                    username, password))
+        if (authenticate_keyboard_interactive_password(password))
         {
             // Success
             return true;
@@ -116,12 +114,11 @@ bool SSHSession::authenticate_try_password_methods(
     return false;
 }
 
-bool SSHSession::authenticate_password(const QString& username,
-                                       const QString& password)
+bool SSHSession::authenticate_password(const QString& password)
 {
     // Try to authenticate using password method
     int rc = ssh_userauth_password(ssh_session_,
-                               username.toStdString().c_str(),
+                               username_.toStdString().c_str(),
                                password.toStdString().c_str());
 
     // If authentication did not succeed
@@ -139,11 +136,11 @@ bool SSHSession::authenticate_password(const QString& username,
 }
 
 bool SSHSession::authenticate_keyboard_interactive_password(
-        const QString& username, const QString& password)
+        const QString& password)
 {
     // initialize keyboard interactive
     int rc = ssh_userauth_kbdint(ssh_session_,
-                                 username.toStdString().c_str(),
+                                 username_.toStdString().c_str(),
                                  NULL);
 
     if (rc != SSH_AUTH_INFO)
@@ -200,7 +197,7 @@ bool SSHSession::authenticate_keyboard_interactive_password(
 
     // Do keyboard interactive again
     rc = ssh_userauth_kbdint(ssh_session_,
-                             username.toStdString().c_str(),
+                             username_.toStdString().c_str(),
                              NULL);
 
     // Fetch info rows from host
@@ -223,7 +220,7 @@ bool SSHSession::authenticate_keyboard_interactive_password(
         }
 
         rc = ssh_userauth_kbdint(ssh_session_,
-                                 username.toStdString().c_str(),
+                                 username_.toStdString().c_str(),
                                  NULL);
     }
 

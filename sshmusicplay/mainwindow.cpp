@@ -75,17 +75,21 @@ void MainWindow::showExpanded()
 
 void MainWindow::doConnect()
 {
+    // Username
+    QString username = ui_->txtUsername->text();
+
+    qDebug() << "Connecting with username: " << username;
+
     if (!sshsession_.connect(ui_->txtHostname->text(),
                              atoi(ui_->txtPort->text().
                                   toStdString().c_str()),
-                             ui_->txtUsername->text()))
+                             username))
     {
         ui_->lblStatus->setText("Connect failed");
         return;
     }
 
     if(!sshsession_.authenticate_try_password_methods(
-                ui_->txtUsername->text(),
                 ui_->txtPassword->text()))
     {
         ui_->lblStatus->setText("Authentication failed");
