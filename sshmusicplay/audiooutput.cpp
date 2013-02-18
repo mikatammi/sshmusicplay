@@ -101,9 +101,13 @@ void AudioOutput::write(qint16* data, size_t offset, size_t count)
         return;
     }
 
+    // Create jshortArray for data
+    jshortArray data_array = env->NewShortArray(count);
+    env->SetShortArrayRegion(data_array, offset, count, data);
+
     // Call Java AudioTrackOutput write function
     env->CallVoidMethod(audiotrackoutputobject_, audiotrackoutput_write__,
-                        data, offset, count);
+                        data_array, 0, count);
 
     // Detach Java VM from current thread after use
     javavm__->DetachCurrentThread();

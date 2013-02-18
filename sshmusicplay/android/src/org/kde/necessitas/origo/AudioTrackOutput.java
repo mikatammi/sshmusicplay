@@ -4,6 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.media.AudioManager;
 
+/// AudioTrack Output
 public class AudioTrackOutput
 {
     AudioTrack audiotrack_;
@@ -22,7 +23,7 @@ public class AudioTrackOutput
             AudioTrack.getMinBufferSize(samplerate, channelconfig, audioformat);
         
         // Set target buffer size
-        int targetbuffersize = 2048*1024; // 2 MiB
+        int targetbuffersize = 44100;
 
         // Initialize buffer size to target buffer size
         int buffersize = targetbuffersize;
