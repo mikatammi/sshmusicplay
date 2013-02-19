@@ -25,6 +25,10 @@ public:
     /// Stops playing the audio data after buffer has reached end.
     void stop();
 
+    /// Get head position
+    /// @return position
+    int getHeadPosition();
+
     /// Write audio data to audio hardware for playback.
     /// @param data Audio data
     /// @param offset (in shorts) Offset in audioData where to start reading

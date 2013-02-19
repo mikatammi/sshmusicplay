@@ -10,6 +10,7 @@ static jmethodID audiotrackoutput_constructor__ = 0;
 static jmethodID audiotrackoutput_play__ = 0;
 static jmethodID audiotrackoutput_pause__ = 0;
 static jmethodID audiotrackoutput_stop__ = 0;
+static jmethodID audiotrackoutput_getHeadPosition__ = 0;
 static jmethodID audiotrackoutput_write__ = 0;
 
 AudioOutput::AudioOutput(QObject *parent) :
@@ -93,6 +94,26 @@ void AudioOutput::stop()
     javavm__->DetachCurrentThread();
 }
 
+int AudioOutput::getHeadPosition()
+{
+    // Attach Java VM to current thread and get environment
+    JNIEnv* env;
+    if (javavm__->AttachCurrentThread(&env, NULL) < 0)
+    {
+        qCritical() << "Could not Attach Java VM to Current Thread";
+        return -1;
+    }
+
+    // Call Java AudioTrackOutput getHeadPosition function
+    jint retval = env->CallIntMethod(
+                audiotrackoutputobject_, audiotrackoutput_getHeadPosition__);
+
+    // Detach Java VM from current thread after use
+    javavm__->DetachCurrentThread();
+
+    return retval;
+}
+
 void AudioOutput::write(qint16* data, size_t offset, size_t count)
 {
     // Attach Java VM to current thread and get environment
@@ -172,6 +193,14 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     // Get AudioTrackOutput stop function
     audiotrackoutput_stop__ = env->GetMethodID(
                 audiotrackoutputclassid__, "stop", "()V");
+    if (!audiotrackoutput_constructor__)
+    {
+        qCritical() << "Cannot get AudioTrackOutput stop function";
+    }
+
+    // Get AudioTrackOutput getHeadPosition function
+    audiotrackoutput_stop__ = env->GetMethodID(
+                audiotrackoutputclassid__, "getHeadPosition", "()I");
     if (!audiotrackoutput_constructor__)
     {
         qCritical() << "Cannot get AudioTrackOutput stop function";

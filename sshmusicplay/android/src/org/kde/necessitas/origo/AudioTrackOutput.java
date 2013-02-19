@@ -23,7 +23,7 @@ public class AudioTrackOutput
             AudioTrack.getMinBufferSize(samplerate, channelconfig, audioformat);
         
         // Set target buffer size
-        int targetbuffersize = 44100;
+        int targetbuffersize = samplerate * 20;
 
         // Initialize buffer size to target buffer size
         int buffersize = targetbuffersize;
@@ -56,6 +56,11 @@ public class AudioTrackOutput
     public void stop()
     {
         audiotrack_.stop();
+    }
+
+    public int getHeadPosition()
+    {
+        return audiotrack_.getPlaybackHeadPosition();
     }
 
     /// Write audio data to audio hardware for playback.
