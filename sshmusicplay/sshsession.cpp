@@ -25,6 +25,8 @@ bool SSHSession::connect(const QString& hostname,
                          int port,
                          const QString& username)
 {
+    Q_ASSERT(!connected_);
+
     qDebug() << "Connecting...";
 
     // Set username
@@ -53,6 +55,7 @@ bool SSHSession::connect(const QString& hostname,
                     username_.toStdString().c_str());
 
     int rc = ssh_connect(ssh_session_);
+    connected_ = true;
     if (rc != SSH_OK)
     {
         qDebug() << "Failed to connect: "
@@ -68,7 +71,6 @@ bool SSHSession::connect(const QString& hostname,
 
     qDebug() << "Connection successful";
 
-    connected_ = true;
 
     // Success
     return true;
