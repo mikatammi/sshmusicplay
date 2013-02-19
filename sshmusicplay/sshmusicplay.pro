@@ -19,7 +19,8 @@ HEADERS += mainwindow.hpp \
     sshsession.hpp \
     sshfile.hpp \
     audiofile.hpp \
-    audiooutput.hpp
+    audiooutput.hpp \
+    libav.hpp
 FORMS += mainwindow.ui
 
 # libssl android
