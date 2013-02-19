@@ -276,7 +276,14 @@ bool SSHSession::ssh_sftp_init()
 
 QStringList SSHSession::collectFilelist(const QString &directory)
 {
-    return recurseCollectFileList(directory, "");
+    // Get file list using recursion
+    QStringList filelist = recurseCollectFileList(directory, "");
+
+    // Sort file list
+    filelist.sort();
+
+    // Return sorted file list
+    return filelist;
 }
 
 QStringList SSHSession::recurseCollectFileList(
