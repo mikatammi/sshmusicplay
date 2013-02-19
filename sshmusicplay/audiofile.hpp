@@ -64,8 +64,9 @@ private:
     // Pointer to SSH File
     std::tr1::shared_ptr <SSHFile> sshfile_;
 
-    static const unsigned int IO_BUFFER_SIZE = 4096;
-    static const unsigned int DECODED_DATA_BUFFER_SIZE = 2048*1024; // 2MB
+    static const unsigned int IO_BUFFER_SIZE = 65536;
+    static const unsigned int DECODED_DATA_BUFFER_SIZE = 44100*20*3; //30sec
+            //4096*1024; // 4MB
 
     unsigned int decoded_bufferpos_;
     char decoded_buffer_[DECODED_DATA_BUFFER_SIZE];

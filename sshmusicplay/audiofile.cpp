@@ -1,6 +1,7 @@
 #include "audiofile.hpp"
 #include "audiooutput.hpp"
 #include <QDebug>
+#include <QThread>
 
 AudioFile::AudioFile(std::tr1::shared_ptr <SSHFile> file,
                      QObject *parent) :
@@ -69,8 +70,6 @@ bool AudioFile::open()
     // Get pointer to codec context of audio stream
     codec_context_ = format_context_->streams[audiostream_]->codec;
 
-    qDebug() << "Codec: " << codec_context_->codec_name;
-
     // Find decoder for audio stream
     codec_ = avcodec_find_decoder(codec_context_->codec_id);
     if (codec_ == NULL)
@@ -93,6 +92,7 @@ bool AudioFile::open()
     av_dict_free(&options);
 
     // File opened
+    qDebug() << "Codec:" << codec_->name << ":" << codec_->long_name;
     qDebug() << "Audio file opened successfully";
 
     opened_ = true;
@@ -110,23 +110,25 @@ bool AudioFile::read_and_decode_frame()
     qDebug() << "Reading frame";
 
     // Try to read frame packet
-    AVPacket* packet = 0;
-    if (av_read_frame(format_context_, packet) < 0)
+    AVPacket packet;
+    if (av_read_frame(format_context_, &packet) < 0)
     {
         qDebug() << "Error while reading frame/packet";
 
         return false;
     }
 
+    qDebug() << "Allocating";
+
     // Allocate frame structure
     AVFrame* frame = avcodec_alloc_frame();
 
-    qDebug() << "Frame read, decoding...";
+    qDebug() << "Decoding";
 
     int got_frame;
 
     // Try to decode frame
-    if (avcodec_decode_audio4(codec_context_, frame, &got_frame, packet) < 0)
+    if (avcodec_decode_audio4(codec_context_, frame, &got_frame, &packet) < 0)
     {
         qDebug() << "Error while decoding frame";
 
@@ -134,7 +136,7 @@ bool AudioFile::read_and_decode_frame()
         av_free(frame);
 
         // Free packet after use
-        av_free_packet(packet);
+        av_free_packet(&packet);
 
         return false;
     }
@@ -165,7 +167,7 @@ bool AudioFile::read_and_decode_frame()
     av_free(frame);
 
     // Free packet after use
-    av_free_packet(packet);
+    av_free_packet(&packet);
 
     qDebug() << "Frame read successfully";
 
@@ -212,10 +214,50 @@ int64_t AudioFile::av_customseek(
     return sshfile->tell();
 }
 
+class PlayThread : public QThread
+{
+public:
+    PlayThread(std::tr1::shared_ptr <AudioOutput> output,
+            QObject* parent = 0) :
+        QThread(parent),
+        playing_(false),
+        output_(output)
+    {
+    }
+
+    void run()
+    {
+        playing_ = true;
+        while(playing_)
+        {
+
+        };
+    }
+
+private:
+    bool playing_;
+    std::tr1::shared_ptr <AudioOutput> output_;
+};
+
 void AudioFile::play(std::tr1::shared_ptr <AudioOutput> output)
 {
     //
-    read_and_decode_frame();
+    while(decoded_bufferpos_ < 44100*20*2)
+    {
+        read_and_decode_frame();
+    }
+
+
+    qDebug() << "output write";
+
+    output->write(reinterpret_cast <qint16*> (decoded_buffer_),
+                  0, 44100*20);;
+
+    qDebug() << "output play";
+
+    output->play();
+
+    //PlayThread p(output, this);
 }
 
 void AudioFile::pause()
