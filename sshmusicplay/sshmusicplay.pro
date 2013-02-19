@@ -93,6 +93,7 @@ OTHER_FILES += \
     android/src/org/kde/necessitas/ministro/IMinistroCallback.aidl \
     android/src/org/kde/necessitas/origo/QtActivity.java \
     android/src/org/kde/necessitas/origo/QtApplication.java \
+    android/src/org/kde/necessitas/origo/AudioTrackOutput.java \
     android/AndroidManifest.xml \
     android/res/values-zh-rCN/strings.xml \
     android/res/values-zh-rTW/strings.xml \
