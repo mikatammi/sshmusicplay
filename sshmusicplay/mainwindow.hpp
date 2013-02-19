@@ -4,7 +4,11 @@
 #include <QMainWindow>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <tr1/memory>
+
 #include "sshsession.hpp"
+#include "sshfile.hpp"
+#include "audiofile.hpp"
 #include "audiooutput.hpp"
 
 namespace Ui {
@@ -30,15 +34,20 @@ public:
     void showExpanded();
 
 private slots:
+    void doPlayPause();
+
     void doConnect();
 
 private:
     Ui::MainWindow *ui_;
 
     SSHSession sshsession_;
+    std::tr1::shared_ptr <SSHFile> sshfile_;
+
     QStandardItemModel filelist_model_;
 
-    AudioOutput audiooutput_;
+    std::tr1::shared_ptr <AudioFile> audiofile_;
+    std::tr1::shared_ptr <AudioOutput> audiooutput_;
 };
 
 #endif // MAINWINDOW_H

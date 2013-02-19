@@ -19,12 +19,17 @@ MainWindow::MainWindow(QWidget *parent)
       ui_(new Ui::MainWindow),
       sshsession_(),
       filelist_model_(this),
+      audiofile_(),
       audiooutput_()
 {
     ui_->setupUi(this);
+
+    // Set treeview to show model
     ui_->treeView->setModel(&filelist_model_);
 
+    // Connect button signals to their corresponding slots
     connect(ui_->btnConnect, SIGNAL(clicked()), SLOT(doConnect()));
+    connect(ui_->btnPlayPause, SIGNAL(clicked()), SLOT(doPlayPause()));
 
     // Generate sin signal a
     qint16 a[44100];
@@ -33,9 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
         a[i] = qSin(float(i) / 19.9f) * 30000.0f;
     }
 
-    audiooutput_.write(a, 0, 44100);
-    audiooutput_.play();
-    audiooutput_.stop();
+    audiooutput_.reset(new AudioOutput);
+    audiooutput_->write(a, 0, 44100);
+    audiooutput_->play();
+    audiooutput_->stop();
 }
 
 MainWindow::~MainWindow()
@@ -84,6 +90,48 @@ void MainWindow::showExpanded()
 #else
     show();
 #endif
+}
+
+void MainWindow::doPlayPause()
+{
+    qDebug() << "doPlayPause()";
+
+    // Get QModelIndex of selected track
+    QModelIndexList indexlist =
+            ui_->treeView->selectionModel()->selectedIndexes();
+
+    if (indexlist.size() == 0)
+    {
+        qDebug() << "Indexlist size == 0";
+        return;
+    }
+
+    QModelIndex index = *indexlist.begin();
+
+    // Get track filename
+    QString filename = index.data().toString();
+
+    sshfile_ = sshsession_.getFile();
+    if(!sshfile_->open(filename))
+    {
+        qDebug() << "Could not open SSHFile";
+    }
+
+    // Create audiofile using SSHFile
+    audiofile_.reset(new AudioFile(sshfile_));
+
+    // Open audio file
+    if(!audiofile_->open())
+    {
+        qDebug() << "Could not open audio file";
+
+        return;
+    }
+
+    // Play audiofile to audiooutput
+    audiofile_->play(audiooutput_);
+
+
 }
 
 void MainWindow::doConnect()
