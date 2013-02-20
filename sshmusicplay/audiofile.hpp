@@ -1,21 +1,24 @@
 #ifndef AUDIOFILE_HPP
 #define AUDIOFILE_HPP
 
+#include <vector>
 #include <tr1/memory>
-#include <QObject>
+#include <QThread>
 
 #include "sshfile.hpp"
 #include "libav.hpp"
 
 class AudioOutput;
 
-class AudioFile : public QObject
+// Class for decoding audio file. Uses SSHFile for reading.
+class AudioFile
 {
-    Q_OBJECT
+
 public:
-    // Constructor
-    explicit AudioFile(std::tr1::shared_ptr <SSHFile> file,
-                       QObject *parent = 0);
+
+    /// Constructor
+    /// @param file Opened SSHFile to use for reading
+    explicit AudioFile(std::tr1::shared_ptr <SSHFile> file);
 
     // Destructor
     virtual ~AudioFile();
@@ -36,17 +39,55 @@ public:
 
     // Stop audio playing after buffer has reached end
     void stop();
-    
-signals:
-    
-public slots:
+
 
 private:
+    // Function for reading and decoding one frame from input stream
+    static bool read_and_decode_frame(std::vector <qint8>& buf,
+                                      AVFormatContext* format_context,
+                                      AVCodecContext* codec_context);
 
-    static int av_customread(void* opaque, uint8_t* buf, int buf_size);
-    static int64_t av_customseek(void* opaque, int64_t offset, int whence);
+    // Custom read and seek callback functions for libavformat,
+    // which can read SSHFile.
+    static int av_sshfile_read(void* opaque, uint8_t* buf, int buf_size);
+    static int64_t av_sshfile_seek(void* opaque, int64_t offset, int whence);
 
-    bool read_and_decode_frame();
+    // Internal class for Player thread
+    class PlayerThread : public QThread
+    {
+    public:
+        // Constructor
+        PlayerThread(std::tr1::shared_ptr <AudioOutput> output,
+                   AVFormatContext* format_context,
+                   AVCodecContext* codec_context,
+                   QObject* parent = 0);
+
+        // Destructor
+        virtual ~PlayerThread();
+
+        // thread code
+        void run();
+
+        // Is playing?
+        bool is_playing() const;
+
+        // Stop playing. Blocking until thread stops.
+        void stop_play();
+
+    private:
+        // Playing controls if thread main loop is running or not
+        bool playing_;
+
+        // Audio output
+        std::tr1::shared_ptr <AudioOutput> output_;
+
+        // libav contexes, needed for decoding
+        AVFormatContext* format_context_;
+        AVCodecContext* codec_context_;
+
+        // buffer
+        std::vector <qint8> buffer_;
+    };
 
     // File open status
     bool opened_;
@@ -64,13 +105,18 @@ private:
     // Pointer to SSH File
     std::tr1::shared_ptr <SSHFile> sshfile_;
 
-    static const unsigned int IO_BUFFER_SIZE = 65536;
-    static const unsigned int DECODED_DATA_BUFFER_SIZE = 44100*20*3; //30sec
-            //4096*1024; // 4MB
+    // Player thread
+    std::tr1::shared_ptr <PlayerThread> playerthread_;
 
-    unsigned int decoded_bufferpos_;
-    char decoded_buffer_[DECODED_DATA_BUFFER_SIZE];
+    // Input data buffer size.
+    static const unsigned int IO_BUFFER_SIZE = 1024 * 512; // 512 KiB
 
+    // Audio buffer size.
+    // If you change this, remember to change it also in java class.
+    // TODO: Write some kind of audio buffer size getter mechanism
+    //       for AudioOutput/AudioTrackOutput classes, to make
+    //       PlayerThread able to automatically detect buffer size.
+    static const unsigned int AUDIO_BUFFER_SIZE = 1024 * 512; // 512 KiB
 };
 
 #endif // AUDIOFILE_HPP

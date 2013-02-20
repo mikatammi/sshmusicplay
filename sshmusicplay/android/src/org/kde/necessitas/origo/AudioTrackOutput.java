@@ -23,7 +23,7 @@ public class AudioTrackOutput
             AudioTrack.getMinBufferSize(samplerate, channelconfig, audioformat);
         
         // Set target buffer size
-        int targetbuffersize = samplerate * 20;
+        int targetbuffersize = 1024 * 512; //512 KiB
 
         // Initialize buffer size to target buffer size
         int buffersize = targetbuffersize;
@@ -50,6 +50,7 @@ public class AudioTrackOutput
     public void pause()
     {
         audiotrack_.pause();
+        audiotrack_.flush();
     }
 
     /// Stops playing the audio data after buffer has reached end.

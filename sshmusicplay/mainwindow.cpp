@@ -98,7 +98,9 @@ void MainWindow::showExpanded()
 
 void MainWindow::doPlayPause()
 {
-    qDebug() << "doPlayPause()";
+    // Free audiofile and sshfile objects
+    audiofile_.reset();
+    sshfile_.reset();
 
     // Get QModelIndex of selected track
     QModelIndexList indexlist =
@@ -106,36 +108,38 @@ void MainWindow::doPlayPause()
 
     if (indexlist.size() == 0)
     {
-        qDebug() << "Indexlist size == 0";
+        // Nothing selected
         return;
     }
 
+    // Get index
     QModelIndex index = *indexlist.begin();
 
-    // Get track filename
+    // Get track filename from index data
     QString filename = index.data().toString();
 
+    // Get SSHFile object from session
     sshfile_ = sshsession_.getFile();
+
+    // Try to open file
     if(!sshfile_->open(filename))
     {
         qDebug() << "Could not open SSHFile";
+        return;
     }
 
-    // Create audiofile using SSHFile
+    // Create audiofile which uses sshfile
     audiofile_.reset(new AudioFile(sshfile_));
 
     // Open audio file
     if(!audiofile_->open())
     {
-        qDebug() << "Could not open audio file";
-
+        qDebug() << "Could not open audiofile object";
         return;
     }
 
-    // Play audiofile to audiooutput
+    // Play audiofile to audiooutput. Launches thread.
     audiofile_->play(audiooutput_);
-
-
 }
 
 void MainWindow::doConnect()
@@ -145,6 +149,7 @@ void MainWindow::doConnect()
 
     qDebug() << "Connecting with username: " << username;
 
+    // Try to Connect to SSH server
     if (!sshsession_.connect(ui_->txtHostname->text(),
                              atoi(ui_->txtPort->text().
                                   toStdString().c_str()),
@@ -155,6 +160,7 @@ void MainWindow::doConnect()
         return;
     }
 
+    // Try to authenticate with password
     if(!sshsession_.authenticate_try_password_methods(
                 ui_->txtPassword->text()))
     {
@@ -163,6 +169,7 @@ void MainWindow::doConnect()
         return;
     }
 
+    // Try to initialize sftp subsystem
     if(!sshsession_.ssh_sftp_init())
     {
         ui_->lblStatus->setText("SFTP init failed");
@@ -170,11 +177,15 @@ void MainWindow::doConnect()
         return;
     }
 
+    // Collect file list from ssh session from given directory
     QStringList filelist =
             sshsession_.collectFilelist(ui_->txtDirectory->text());
 
+    // Change to directory listing view
     ui_->stackedWidget->setCurrentWidget(ui_->pageDirectory);
 
+    // Kind of ugly hack for now. Add raw filenames to
+    // filelist model.
     foreach(const QString& filename, filelist)
     {
         filelist_model_.appendRow(new QStandardItem(filename));
