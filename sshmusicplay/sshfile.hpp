@@ -1,20 +1,19 @@
 #ifndef SSHFILE_HPP
 #define SSHFILE_HPP
 
-#include <QObject>
+#include <QString>
+#include <QTypeInfo>
 
 extern "C"
 {
 #include <libssh/sftp.h>
 }
 
-class SSHFile : public QObject
+class SSHFile
 {
-    Q_OBJECT
 public:
     /// Constructor
-    explicit SSHFile(sftp_session session,
-                     QObject *parent = 0);
+    explicit SSHFile(sftp_session session);
 
     /// Destructor
     virtual ~SSHFile();
@@ -46,10 +45,6 @@ public:
     /// Tells current position in file
     /// @return Current position in file
     unsigned long tell();
-
-signals:
-    
-public slots:
 
 private:
     // Variable which holds if file is open or not

@@ -5,9 +5,7 @@ extern "C"
 #include <fcntl.h> // Needed for O_RDONLY
 }
 
-SSHFile::SSHFile(sftp_session session,
-                 QObject *parent) :
-    QObject(parent),
+SSHFile::SSHFile(sftp_session session) :
     file_opened_(false),
     sftp_session_(session)
 {
