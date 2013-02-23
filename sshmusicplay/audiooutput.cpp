@@ -13,8 +13,8 @@ static jmethodID audiotrackoutput_stop__ = 0;
 static jmethodID audiotrackoutput_getHeadPosition__ = 0;
 static jmethodID audiotrackoutput_write__ = 0;
 
-AudioOutput::AudioOutput(QObject *parent) :
-    QObject(parent)
+AudioOutput::AudioOutput() :
+    audiotrackoutputobject_()
 {
     // Attach Java VM to current thread and get environment
     JNIEnv* env;

@@ -1,17 +1,18 @@
 #ifndef AUDIOOUTPUT_HPP
 #define AUDIOOUTPUT_HPP
 
-#include <QObject>
+#include <QTypeInfo>
+
 #include <jni.h>
 
 /// JNI Wrapper class for Java AudioTrackOutput
-class AudioOutput : public QObject
+class AudioOutput
 {
-    Q_OBJECT
+
 public:
 
     /// Constructor
-    explicit AudioOutput(QObject *parent = 0);
+    explicit AudioOutput();
 
     /// Destructor
     virtual ~AudioOutput();
@@ -35,10 +36,6 @@ public:
     /// @param count (in shorts) How many values to read following offset
     void write(qint16* data, size_t offset, size_t count);
     
-signals:
-    
-public slots:
-
 private:
 
     // JNI jobject for AudioTrackOutput class
