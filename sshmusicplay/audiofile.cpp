@@ -3,13 +3,13 @@
 #include <QDebug>
 #include <QThread>
 
-AudioFile::AudioFile(std::tr1::shared_ptr <SSHFile> file) :
+AudioFile::AudioFile(std::tr1::shared_ptr <DownloadBuffer> file) :
     opened_(false),
     format_context_(0),
     codec_context_(0),
     codec_(0),
     audiostream_(-1),
-    sshfile_(file)
+    file_(file)
 {
 }
 
@@ -42,10 +42,10 @@ bool AudioFile::open()
                                              + FF_INPUT_BUFFER_PADDING_SIZE)),
                                IO_BUFFER_SIZE,
                                0,
-                               reinterpret_cast <void*> (sshfile_.get()),
-                               &AudioFile::av_sshfile_read,
+                               reinterpret_cast <void*> (file_.get()),
+                               &AudioFile::av_file_read,
                                NULL,
-                               &AudioFile::av_sshfile_seek);
+                               &AudioFile::av_file_seek);
     format_context_->pb = aviocontext;
 
     // Try to open file
@@ -159,7 +159,7 @@ bool AudioFile::read_and_decode_frame(std::vector <qint8>& buf,
 
     // TODO: Maybe some better way to do this?
     buf.assign(frame->linesize[0], 0);
-    memcpy(&buf[0], frame->extended_data[0], frame->linesize[0]);
+    memcpy(&buf[0], frame->data[0], frame->linesize[0]);
 
     // Free frame after use
     av_free(frame);
@@ -170,27 +170,27 @@ bool AudioFile::read_and_decode_frame(std::vector <qint8>& buf,
     return true;
 }
 
-int AudioFile::av_sshfile_read(void *opaque, uint8_t *buf, int buf_size)
+int AudioFile::av_file_read(void *opaque, uint8_t *buf, int buf_size)
 {
     // Reinterpret cast opaque pointer back to SSHFile
-    SSHFile* sshfile = reinterpret_cast <SSHFile*> (opaque);
+    DownloadBuffer* file = reinterpret_cast <DownloadBuffer*> (opaque);
 
     // Return number of bytes read
-    int retval = sshfile->read(buf, buf_size);
+    int retval = file->read(reinterpret_cast <char*> (buf), buf_size);
 
-    qDebug() << "av_sshfile_read  buf_size: " << buf_size
-             << "  retval: " << retval;
+    //qDebug() << "av_file_read  buf_size: " << buf_size
+             //<< "  retval: " << retval;
 
     return retval;
 }
 
-int64_t AudioFile::av_sshfile_seek(
+int64_t AudioFile::av_file_seek(
         void *opaque, int64_t offset, int whence)
 {
-    qDebug() << "av_sshfile_seek  offset: " << offset << "  whence :" << whence;
+    qDebug() << "av_file_seek  offset: " << offset << "  whence :" << whence;
 
     // Reinterpret cast opaque pointer back to SSHFile
-    SSHFile* sshfile = reinterpret_cast <SSHFile*> (opaque);
+    DownloadBuffer* file = reinterpret_cast <DownloadBuffer*> (opaque);
 
     if (whence == AVSEEK_SIZE)
     {
@@ -198,15 +198,15 @@ int64_t AudioFile::av_sshfile_seek(
         return -1;
     }
 
-    if (!sshfile->seek(offset))
+    if (!file->seek(offset))
     {
         qDebug() << "retval: -1";
         return -1;
     }
 
     // Return current position in file
-    qDebug() << "retval: " << sshfile->tell();
-    return sshfile->tell();
+    qDebug() << "retval: " << file->tell();
+    return file->tell();
 }
 
 void AudioFile::play(std::tr1::shared_ptr <AudioOutput> output)
@@ -309,6 +309,7 @@ void AudioFile::PlayerThread::run()
 
 void AudioFile::PlayerThread::stop_play()
 {
+    // TODO: Implement mutual exclusions
     // If not playing, don't try to stop playing
     if (!playing_)
     {

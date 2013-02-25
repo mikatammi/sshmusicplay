@@ -10,6 +10,7 @@
 #include "sshfile.hpp"
 #include "audiofile.hpp"
 #include "audiooutput.hpp"
+#include "downloadbuffer.hpp"
 
 namespace Ui {
     class MainWindow;
@@ -46,6 +47,7 @@ private:
 
     QStandardItemModel filelist_model_;
 
+    std::tr1::shared_ptr <DownloadBuffer> downloadbuffer_;
     std::tr1::shared_ptr <AudioFile> audiofile_;
     std::tr1::shared_ptr <AudioOutput> audiooutput_;
 };

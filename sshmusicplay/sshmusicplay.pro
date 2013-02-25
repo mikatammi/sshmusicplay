@@ -14,13 +14,15 @@ SOURCES += main.cpp mainwindow.cpp \
     sshsession.cpp \
     sshfile.cpp \
     audiofile.cpp \
-    audiooutput.cpp
+    audiooutput.cpp \
+    downloadbuffer.cpp
 HEADERS += mainwindow.hpp \
     sshsession.hpp \
     sshfile.hpp \
     audiofile.hpp \
     audiooutput.hpp \
-    libav.hpp
+    libav.hpp \
+    downloadbuffer.hpp
 FORMS += mainwindow.ui
 
 # libssl android

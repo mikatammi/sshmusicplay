@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
       ui_(new Ui::MainWindow),
       sshsession_(),
       filelist_model_(this),
+      downloadbuffer_(),
       audiofile_(),
       audiooutput_()
 {
@@ -128,8 +129,11 @@ void MainWindow::doPlayPause()
         return;
     }
 
+    // Create download buffer for sshfile
+    downloadbuffer_.reset(new DownloadBuffer(sshfile_, this));
+
     // Create audiofile which uses sshfile
-    audiofile_.reset(new AudioFile(sshfile_));
+    audiofile_.reset(new AudioFile(downloadbuffer_));
 
     // Open audio file
     if(!audiofile_->open())

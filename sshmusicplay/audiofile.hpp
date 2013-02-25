@@ -5,7 +5,7 @@
 #include <tr1/memory>
 #include <QThread>
 
-#include "sshfile.hpp"
+#include "downloadbuffer.hpp"
 #include "libav.hpp"
 
 class AudioOutput;
@@ -18,7 +18,7 @@ public:
 
     /// Constructor
     /// @param file Opened SSHFile to use for reading
-    explicit AudioFile(std::tr1::shared_ptr <SSHFile> file);
+    explicit AudioFile(std::tr1::shared_ptr <DownloadBuffer> file);
 
     // Destructor
     virtual ~AudioFile();
@@ -48,9 +48,9 @@ private:
                                       AVCodecContext* codec_context);
 
     // Custom read and seek callback functions for libavformat,
-    // which can read SSHFile.
-    static int av_sshfile_read(void* opaque, uint8_t* buf, int buf_size);
-    static int64_t av_sshfile_seek(void* opaque, int64_t offset, int whence);
+    // which can read File.
+    static int av_file_read(void* opaque, uint8_t* buf, int buf_size);
+    static int64_t av_file_seek(void* opaque, int64_t offset, int whence);
 
     // Internal class for Player thread
     class PlayerThread : public QThread
@@ -65,17 +65,18 @@ private:
         // Destructor
         virtual ~PlayerThread();
 
-        // thread code
-        void run();
-
         // Is playing?
         bool is_playing() const;
 
         // Stop playing. Blocking until thread stops.
         void stop_play();
 
+    protected:
+        // thread code
+        void run();
+
     private:
-        // Playing controls if thread main loop is running or not
+        // Controls if thread main loop is running or not
         bool playing_;
 
         // Audio output
@@ -102,14 +103,14 @@ private:
     // Audiostream id
     int audiostream_;
 
-    // Pointer to SSH File
-    std::tr1::shared_ptr <SSHFile> sshfile_;
+    // Pointer to File
+    std::tr1::shared_ptr <DownloadBuffer> file_;
 
     // Player thread
     std::tr1::shared_ptr <PlayerThread> playerthread_;
 
     // Input data buffer size.
-    static const unsigned int IO_BUFFER_SIZE = 1024 * 512; // 512 KiB
+    static const unsigned int IO_BUFFER_SIZE = 1024 * 64; // 64 KiB
 
     // Audio buffer size.
     // If you change this, remember to change it also in java class.
